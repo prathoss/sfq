@@ -30,7 +30,7 @@ File:
 
 Command:
 
-`sfq -o get -q 'key' -f file.json`
+`sfq -o get -q 'key' -f file.json -s json`
 
 Result:
 
@@ -57,7 +57,7 @@ File:
 
 Command:
 
-`sfq -o get -q '[0]' -f file.json`
+`sfq -o get -q '[0]' -f file.json -s json`
 
 Result:
 
@@ -77,7 +77,7 @@ File:
 
 Command:
 
-`sfq -o get -q '[]' -f file.json`
+`sfq -o get -q '[]' -f file.json -s json`
 
 Result:
 
@@ -109,7 +109,7 @@ File:
 
 Command:
 
-`sfq -o get -q 'key.[].arrayKey' -f file.json`
+`sfq -o get -q 'key.[].arrayKey' -f file.json -s json`
 
 Result:
 
@@ -133,7 +133,7 @@ File:
 
 Command:
 
-`sfq -o get -q 'key.[].arrayKey' -f file.json`
+`sfq -o get -q 'key.[].arrayKey' -f file.json -s json`
 
 Result:
 
