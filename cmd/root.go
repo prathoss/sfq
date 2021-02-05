@@ -3,7 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/Prathoss/sfq/parsers"
 	"github.com/spf13/cobra"
 )
 
@@ -29,4 +31,17 @@ func Execute() {
 
 func init() {
 	structure = rootCmd.PersistentFlags().StringP("structure", "s", "", "set file structure if file extension does not match files structure")
+}
+
+func getParser(fileName string) (parsers.Parser, error) {
+	if *structure == "" {
+		parsedFileName := strings.Split(fileName, ".")
+		length := len(parsedFileName)
+		if length < 2 {
+			return nil, fmt.Errorf("Could not get structure neither from structure flag nor from file")
+		}
+		*structure = parsedFileName[length-1]
+	}
+
+	return parsers.GetParser(*structure)
 }

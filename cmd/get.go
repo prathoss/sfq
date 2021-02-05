@@ -12,10 +12,23 @@ var getCmd = &cobra.Command{
 	Short: "Get values from a file by given query",
 	Long:  `Get values from a file by given query.`,
 	Args:  cobra.ExactArgs(2),
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("get called")
-		fmt.Println("with args:", args)
-		fmt.Println("and with structure flag:", *structure)
+	RunE: func(cmd *cobra.Command, args []string) error {
+		query := args[0]
+		file := args[1]
+
+		parser, err := getParser(file)
+		if err != nil {
+			return err
+		}
+
+		return parser.Parse(file,
+			func(key string) bool {
+				return key == query
+			},
+			func(value string) {
+				fmt.Println(value)
+			},
+		)
 	},
 }
 
