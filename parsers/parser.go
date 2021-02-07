@@ -21,7 +21,7 @@ func (pe StructureNotRecognisedError) Error() string {
 
 func GetParser(structure string) (p Parser, err error) {
 	if structure == "json" {
-		p = &jsonParser{}
+		p = &jsonParser{depth: -1}
 		return
 	}
 	if structure == "yaml" {

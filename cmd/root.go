@@ -17,7 +17,8 @@ var rootCmd = &cobra.Command{
 	Short: "Query structured files",
 	Long: `Tool for manipulation of structured files.
 
-Support for getting data out of the file or changing the data.`,
+Support for getting data out of the file or changing the data.
+Expects valid file, when file is invalid may not behave correctly.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

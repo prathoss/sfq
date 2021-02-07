@@ -10,7 +10,7 @@
 			"request": "launch",
 			"mode": "debug",
 			"program": "${workspaceFolder}/main.go",
-			"args": ["get", "key", "./test/test.json"]
+			"args": ["get", "abc", "./test/test.json"]
 		}
 	]
 }
