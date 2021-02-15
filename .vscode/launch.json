@@ -5,12 +5,20 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Debug main get",
+			"name": "Debug get",
 			"type": "go",
 			"request": "launch",
 			"mode": "debug",
 			"program": "${workspaceFolder}/main.go",
-			"args": ["get", "abc", "./test/test.json"]
+			"args": ["get", "key.abc", "./test/test.json"]
+		},
+		{
+			"name": "Debug set",
+			"type": "go",
+			"request": "launch",
+			"mode": "debug",
+			"program": "${workspaceFolder}/main.go",
+			"args": ["set", "key.abc=abcNew", "./test/test.json"]
 		}
 	]
 }
