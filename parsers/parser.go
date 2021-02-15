@@ -8,7 +8,7 @@ import (
 )
 
 type Parser interface {
-	Parse(string, func(string) bool, func(string)) error
+	Parse(string, func(string, int) bool, func(string), func(rune)) error
 }
 
 type StructureNotRecognisedError struct {
