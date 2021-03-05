@@ -8,7 +8,7 @@ import (
 )
 
 type Parser interface {
-	Parse(string, func(string, int) bool, func(string), func(rune)) error
+	Parse(io.Reader, func(string, int) bool, func(string), func(rune)) error
 }
 
 type StructureNotRecognisedError struct {
@@ -24,7 +24,7 @@ func GetParser(structure string) (p Parser, err error) {
 		p = &jsonParser{depth: -1}
 		return
 	}
-	if structure == "yaml" {
+	if structure == "yaml" || structure == "yml" {
 		p = &yamlParser{}
 		return
 	}
