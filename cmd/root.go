@@ -12,7 +12,6 @@ import (
 
 var (
 	structure *string
-	file      *string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -36,33 +35,49 @@ func Execute() {
 
 func init() {
 	structure = rootCmd.PersistentFlags().StringP("structure", "s", "", "set file structure if file extension does not match files structure")
-	file = rootCmd.PersistentFlags().StringP("file", "f", "", "set file to read, if not set use standard input")
 }
 
-func getParser() (parsers.Parser, error) {
-	if *structure == "" {
-		if *file == "" {
-			return nil, fmt.Errorf("file flag not set, please set structure flag to parse file correctly")
+//first argument is always query, second is optional (fileName)
+var (
+	argsSetup = cobra.RangeArgs(1, 2)
+)
+
+/*getSourceAndParser returns
+
+- reader: either standard input if file not set
+
+- func: func to close file
+
+- parser: correct parser for file structure
+
+- error
+*/
+func getSourceAndParser(args []string) (io.ReadSeekCloser, func(), parsers.Parser, error) {
+	if len(args) == 1 {
+		if *structure == "" {
+			return nil, nil, nil, fmt.Errorf("structure flag has to be set when reading from pipe")
 		}
-		parsedFileName := strings.Split(*file, ".")
-		length := len(parsedFileName)
-		if length < 2 {
-			return nil, fmt.Errorf("could not get structure neither from structure flag nor from file")
+		parser, err := parsers.GetParser(*structure)
+		if err != nil {
+			return nil, nil, nil, err
 		}
-		*structure = parsedFileName[length-1]
+		return os.Stdin, func() {}, parser, nil
 	}
 
-	return parsers.GetParser(*structure)
-}
-
-func getSource() (io.Reader, error) {
-	if *file == "" {
-		return os.Stdin, nil
-	}
-
-	fileReader, err := os.Open(*file)
+	fileName := args[1]
+	fileReader, err := os.Open(fileName)
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
-	return fileReader, nil
+	parsedFileName := strings.Split(fileName, ".")
+	fnLen := len(parsedFileName)
+	if fnLen < 2 {
+		return nil, nil, nil, fmt.Errorf("could not get structure from file extension")
+	}
+	str := parsedFileName[fnLen-1]
+	parser, err := parsers.GetParser(str)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return fileReader, func() { fileReader.Close() }, parser, nil
 }

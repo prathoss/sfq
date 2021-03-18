@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Prathoss/sfq/parsers"
 	"github.com/spf13/cobra"
 )
 
@@ -12,10 +13,9 @@ var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Writes updated file by given query into standard output",
 	Long:  `Writes updated file by given query into standard output.`,
-	Args:  cobra.ExactValidArgs(2),
+	Args:  argsSetup,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		query := args[0]
-		file := args[1]
 
 		eqSplit := strings.Split(query, "=")
 		if len(eqSplit) < 2 {
@@ -25,27 +25,30 @@ var setCmd = &cobra.Command{
 		keys := strings.Split(eqSplit[0], ".")
 		valueToSet := strings.Join(eqSplit[1:], "=")
 
-		parser, err := getParser(file)
+		nOfKeys := len(keys) - 1
+
+		reader, closeFunc, parser, err := getSourceAndParser(args)
 		if err != nil {
 			return err
 		}
+		defer closeFunc()
 
 		otherSymbolsBuilder := strings.Builder{}
 		isLastKey := false
 
-		return parser.Parse(file,
-			func(key string, depth int) bool {
+		return parser.Parse(reader,
+			func(key string, depth int) parsers.KeyAction {
 				fmt.Print(otherSymbolsBuilder.String())
 				otherSymbolsBuilder.Reset()
 				fmt.Print(key)
-				if depth >= len(keys){
-					return false
+				if depth == nOfKeys && keys[depth] == key {
+					fmt.Print(valueToSet)
+					return parsers.SkipAction
 				}
-				keyMatch := key == keys[depth]
-				if keyMatch && depth == len(keys) - 1 {
-					isLastKey = true
+				if depth < nOfKeys && keys[depth] == key {
+					return parsers.ReadAction
 				}
-				return keyMatch
+				return parsers.ReturnAction
 			},
 			func(value string) {
 				fmt.Print(otherSymbolsBuilder.String())
